@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using NewsParser.Core.DTO;
 
-namespace HabrParcerConsole
+namespace NewsParser.Core.Extensions
 {
     public static class HtmlParser
     {

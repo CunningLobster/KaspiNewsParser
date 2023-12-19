@@ -18,6 +18,6 @@ namespace NewsParser.Core.ServiceContracts
         /// <param name="from">Дата с</param>
         /// <param name="to">Дата по</param>
         /// <returns>Отфильтрованный список постов</returns>
-        public List<NewsPost> GetNewsPostsByDates(List<NewsPost> newsPosts, DateTime? from, DateTime? to);
+        public Task<List<NewsPost>>? GetNewsPostsByDates(List<NewsPost> newsPosts, DateTime? from, DateTime? to);
     }
 }
