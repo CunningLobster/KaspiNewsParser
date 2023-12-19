@@ -14,7 +14,25 @@ namespace NewsParser.Core.Services
             _logger = logger;
         }
 
-        public NewsPost? GetNewsPostFromHtml(HtmlDto htmlElement)
+        public List<NewsPostDto>? GetAllNewsPostsFromHtml(HtmlDto htmlElement)
+        {
+            List<HtmlDto>? articles = htmlElement.GetFirstElementByClassName("tm-articles-subpage")?.GetAllElementsByClassName("tm-articles-list__item");
+
+            if (articles == null)
+                return null;
+
+            List<NewsPostDto> newsPosts = new List<NewsPostDto>();
+            foreach (HtmlDto article in articles)
+            {
+                NewsPostDto? newsPost = GetNewsPostFromHtml(article);
+                if (newsPost != null)
+                    newsPosts.Add(newsPost);
+            }
+
+            return newsPosts;
+        }
+
+        public NewsPostDto? GetNewsPostFromHtml(HtmlDto htmlElement)
         {
             _logger.LogInformation("Run Method {0} from {1}", nameof(GetNewsPostFromHtml), nameof(HabrNewsPostGetterService));
 
@@ -27,7 +45,7 @@ namespace NewsParser.Core.Services
             HtmlDto? postTimeHtml = htmlElement.GetFirstElementByClassName("tm-article-datetime-published")?.GetFirstElementByTagName("time");
             string postTime = postTimeHtml != null ? postTimeHtml.GetAttributeValue("datetime") : string.Empty;
 
-            return new NewsPost
+            return new NewsPostDto
             {
                 Id = Guid.NewGuid(),
                 Title = title,
@@ -36,7 +54,7 @@ namespace NewsParser.Core.Services
             };
         }
 
-        public async Task<List<NewsPost>>? GetNewsPostsByDates(List<NewsPost> newsPosts, DateTime? from, DateTime? to)
+        public async Task<List<NewsPostDto>>? GetNewsPostsByDates(List<NewsPostDto> newsPosts, DateTime? from, DateTime? to)
         {
             _logger.LogInformation("Run Method {0} from {1}", nameof(GetNewsPostsByDates), nameof(HabrNewsPostGetterService));
 
