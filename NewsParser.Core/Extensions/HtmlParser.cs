@@ -32,15 +32,16 @@ namespace NewsParser.Core.Extensions
         /// </summary>
         /// <param name="tagName">Имя тэга</param>
         /// <param name="htmlText">HTML элемент</param>
+        /// <param name="startIndex">Стартовый индекс</param>
         /// <returns>Индекс элемента, где тэг закрывается</returns>
-        private static int FindElementCloseIndex(string tagName, string htmlText)
+        private static int FindElementCloseIndex(string tagName, string htmlText, int startIndex)
         {
             string openTag = $"<{tagName}";
             string closeTag = $"</{tagName}>";
 
             int openCount = 0;
             int closeCount = 0;
-            int currentSearchIndex = 0;
+            int currentSearchIndex = startIndex;
 
             int closeIndex = htmlText.IndexOf(closeTag, currentSearchIndex);
             int openIndex = htmlText.IndexOf(openTag, currentSearchIndex);
@@ -143,7 +144,7 @@ namespace NewsParser.Core.Extensions
             if (tagIndex == -1)
                 return null;
 
-            int elCloseIndex = FindElementCloseIndex(tagName, innerHtml);
+            int elCloseIndex = FindElementCloseIndex(tagName, innerHtml, startIndex);
 
             int elStringLength = elCloseIndex - tagIndex;
             string element = innerHtml.Substring(tagIndex, elStringLength);
@@ -208,6 +209,32 @@ namespace NewsParser.Core.Extensions
                 htmlElements.Add(element);
                 startIndex = HtmlDto.InnerHtml.IndexOf(element.InnerHtml) + element.InnerHtml.Length;
                 element = GetElementByClassNameFromIndex(HtmlDto, className, startIndex);
+            }
+
+            return htmlElements;
+        }
+
+        /// <summary>
+        /// Получить список элементов по тэгу
+        /// </summary>
+        /// <param name="HtmlDto">HTML элемент, в котором находятся элементы с искомым классом</param>
+        /// <param name="tagName">Имя класса</param>
+        /// <returns>Список HTML элементов в виде ДТО объекта</returns>
+        /// <exception cref="ArgumentNullException">HtmlDto = null</exception>
+        public static List<HtmlDto> GetAllElementsByTagName(this HtmlDto HtmlDto, string tagName)
+        {
+            if (HtmlDto == null)
+                throw new ArgumentNullException(nameof(HtmlDto));
+
+            int startIndex = 0;
+
+            List<HtmlDto> htmlElements = new List<HtmlDto>();
+            HtmlDto? element = GetElementByTagNameFromIndex(HtmlDto, tagName, startIndex);
+            while (element != null)
+            {
+                htmlElements.Add(element);
+                startIndex = HtmlDto.InnerHtml.IndexOf(element.InnerHtml) + element.InnerHtml.Length;
+                element = GetElementByTagNameFromIndex(HtmlDto, tagName, startIndex);
             }
 
             return htmlElements;
