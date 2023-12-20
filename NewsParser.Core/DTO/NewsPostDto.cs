@@ -9,13 +9,14 @@ namespace NewsParser.Core.DTO
         public HtmlDto? Text { get; set; }
         public DateTime PostDate { get; set; }
 
+
         public NewsPost ToNewsPost()
         {
             return new NewsPost
             {
                 Id = Id,
                 Title = Title,
-                Text = Text.InnerHtml,
+                Text = Text != null ? Text.InnerHtml : String.Empty,
                 PostDate = PostDate
             };
         }
