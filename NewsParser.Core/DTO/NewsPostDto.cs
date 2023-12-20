@@ -6,7 +6,7 @@ namespace NewsParser.Core.DTO
     {
         public Guid Id { get; set; }
         public string Title { get; set; } = string.Empty;
-        public string Text { get; set; } = string.Empty;
+        public HtmlDto? Text { get; set; }
         public DateTime PostDate { get; set; }
 
         public NewsPost ToNewsPost()
@@ -15,7 +15,7 @@ namespace NewsParser.Core.DTO
             {
                 Id = Id,
                 Title = Title,
-                Text = Text,
+                Text = Text.InnerHtml,
                 PostDate = PostDate
             };
         }
