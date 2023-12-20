@@ -24,19 +24,15 @@ namespace NewsParser.API.Controllers
         [HttpGet]
         public async Task<ActionResult<List<NewsPostDto>>> GetNewsPosts(DateTime? from, DateTime? to)
         {
+
             _logger.LogInformation("Run GET Method {0} from {1}", nameof(GetNewsPosts), nameof(PostsController));
 
-            string httpResponseString = await _httpService.GetHttpResponse("https://habr.com/ru/articles/top/alltime/");
-
-            HtmlDto html = new HtmlDto(httpResponseString);
-
-            var newsPosts = _newsPostGetterService.GetAllNewsPostsFromHtml(html);
-            var newsPostsByDates = await _newsPostGetterService.GetNewsPostsByDates(newsPosts, from, to);
+            var newsPostsByDates = await _newsPostGetterService.GetNewsPostsByDates(from, to);
 
             if (newsPostsByDates == null)
                 return NotFound();
 
-            return newsPostsByDates;
+            return new List<NewsPostDto>();
         }
 
         [HttpGet]
@@ -45,16 +41,11 @@ namespace NewsParser.API.Controllers
         {
             _logger.LogInformation("Run GET Method {0} from {1}", nameof(GetTopTenWords), nameof(PostsController));
 
-            string httpResponseString = await _httpService.GetHttpResponse("https://habr.com/ru/articles/top/alltime/");
-
-            HtmlDto html = new HtmlDto(httpResponseString);
-
-            var newsPosts = _newsPostGetterService.GetAllNewsPostsFromHtml(html);
+            var newsPosts = await _newsPostGetterService.GetNewsPostsByDates(null, null);
 
             if (newsPosts == null)
-            {
                 return NotFound();
-            }
+
             //Получить текст всех новостей
             StringBuilder allTextBuilder = new StringBuilder();
             foreach (var post in newsPosts)
@@ -80,13 +71,8 @@ namespace NewsParser.API.Controllers
         {
             _logger.LogInformation("Run GET Method {0} from {1}", nameof(GetNewsPostsByText), nameof(PostsController));
 
-            string httpResponseString = await _httpService.GetHttpResponse("https://habr.com/ru/articles/top/alltime/");
+            var newsPostByText = await _newsPostGetterService.GetNewsPostsByText(text);
 
-            HtmlDto html = new HtmlDto(httpResponseString);
-
-            var newsPosts = _newsPostGetterService.GetAllNewsPostsFromHtml(html);
-
-            List<NewsPostDto>? newsPostByText = await _newsPostGetterService.GetNewsPostsByText(newsPosts, text);
             if (newsPostByText == null)
                 return NotFound();
 
