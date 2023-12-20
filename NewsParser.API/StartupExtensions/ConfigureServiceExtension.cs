@@ -1,5 +1,7 @@
+using NewsParser.Core.RepositoryContracts;
 using NewsParser.Core.ServiceContracts;
 using NewsParser.Core.Services;
+using NewsParser.Infrastructure.Repositories;
 
 namespace NewsParser.API.StartupExtensions
 {
@@ -9,13 +11,18 @@ namespace NewsParser.API.StartupExtensions
         {
             services.AddHttpClient();
 
-            // Add services to the container.
+            // Сервисы
             services.AddScoped<IHttpService, HttpService>();
-            services.AddScoped<INewsPostGetterService, HabrNewsPostGetterService>();
+            services.AddScoped<INewsPostGetterService, NewsPostGetterService>();
             services.AddScoped<ITextAnalizerService, TextAnalizerService>();
+            services.AddScoped<INewsPostAdderService, NewsPostAdderService>();
+            services.AddScoped<INewsPostHtmlGetterService, HabrNewsPostHtmlGetterService>();
+
+            // Репозитории
+            services.AddScoped<INewsPostRepository, NewsPostRepository>();
 
             services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
