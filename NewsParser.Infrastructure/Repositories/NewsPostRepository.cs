@@ -1,28 +1,69 @@
+using System.Data;
+using Dapper;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using NewsParser.Core.Entities;
 using NewsParser.Core.RepositoryContracts;
+using NewsParser.Infrastructure.Helpers;
 
 namespace NewsParser.Infrastructure.Repositories
 {
     public class NewsPostRepository : INewsPostRepository
     {
+        private readonly IConfiguration _configuration;
 
-
-        public Task<List<NewsPost>?> AddNewsPosts(List<NewsPost> newsPosts)
+        public NewsPostRepository(IConfiguration configuration)
         {
-            //AddStoreProcedure
-            throw new NotImplementedException();
+            _configuration = configuration;
         }
 
-        public Task<List<NewsPost>?> GetAllNewsPosts()
+        public async Task<List<NewsPost>?> AddNewsPosts(List<NewsPost> newsPosts)
         {
-            //GetAllStoreProcedure
-            throw new NotImplementedException();
+            using (IDbConnection dbConnection = new SqlConnection(_configuration.GetConnectionString("Default")))
+            {
+                dbConnection.Open();
+
+                DataTable dataTable = DataCoverter.ConvertToDataTable(newsPosts);
+                var parameters = new { NewsPosts = dataTable.AsTableValuedParameter("dbo.NewsPostsType") };
+
+                await dbConnection.ExecuteAsync(
+                    "dbo.InsertNewsPosts",
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
+            }
+
+            return newsPosts;
         }
 
-        public Task<NewsPost?> GetNewsPostById(Guid id)
+        public async Task<bool> ClearNewsPostTable()
         {
-            //GetByIdStoreProcedure
-            throw new NotImplementedException();
+            using (IDbConnection dbConnection = new SqlConnection(_configuration.GetConnectionString("Default")))
+            {
+                dbConnection.Open();
+
+                await dbConnection.ExecuteAsync(
+                    "dbo.DeleteAllRows",
+                    commandType: CommandType.StoredProcedure
+                );
+            }
+
+            return true;
+        }
+
+        public async Task<List<NewsPost>?> GetAllNewsPosts()
+        {
+            using (IDbConnection dbConnection = new SqlConnection(_configuration.GetConnectionString("Default")))
+            {
+                dbConnection.Open();
+
+                var newsPosts = await dbConnection.QueryAsync<NewsPost>(
+                    "dbo.GetAllNewsPosts",
+                    CommandType.StoredProcedure
+                );
+
+                return newsPosts.ToList();
+            }
         }
     }
 }

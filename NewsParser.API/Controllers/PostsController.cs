@@ -32,7 +32,7 @@ namespace NewsParser.API.Controllers
             if (newsPostsByDates == null)
                 return NotFound();
 
-            return new List<NewsPostDto>();
+            return newsPostsByDates;
         }
 
         [HttpGet]
