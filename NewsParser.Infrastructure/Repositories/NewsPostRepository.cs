@@ -27,7 +27,7 @@ namespace NewsParser.Infrastructure.Repositories
                 var parameters = new { NewsPosts = dataTable.AsTableValuedParameter("dbo.NewsPostsType") };
 
                 await dbConnection.ExecuteAsync(
-                    "dbo.InsertNewsPosts",
+                    "dbo.AddNewsPosts",
                     parameters,
                     commandType: CommandType.StoredProcedure
                 );
@@ -43,7 +43,7 @@ namespace NewsParser.Infrastructure.Repositories
                 dbConnection.Open();
 
                 await dbConnection.ExecuteAsync(
-                    "dbo.DeleteAllRows",
+                    "dbo.DeleteAllNewsPosts",
                     commandType: CommandType.StoredProcedure
                 );
             }

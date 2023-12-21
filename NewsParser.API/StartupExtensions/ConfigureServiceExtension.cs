@@ -1,6 +1,8 @@
+using Microsoft.EntityFrameworkCore;
 using NewsParser.Core.RepositoryContracts;
 using NewsParser.Core.ServiceContracts;
 using NewsParser.Core.Services;
+using NewsParser.Infrastructure.Data;
 using NewsParser.Infrastructure.Repositories;
 
 namespace NewsParser.API.StartupExtensions

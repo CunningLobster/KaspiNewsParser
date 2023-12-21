@@ -1,9 +1,11 @@
+using Microsoft.EntityFrameworkCore;
 using NewsParser.API;
 using NewsParser.API.StartupExtensions;
+using NewsParser.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.ConfigureServices();
-
+builder.Services.AddDbContext<ApplicationDbContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 var app = builder.Build();
 
 string? newsUrl = builder.Configuration["NewsSourceURL:Habr"];
