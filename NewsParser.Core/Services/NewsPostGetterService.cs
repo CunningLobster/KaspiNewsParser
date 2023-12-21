@@ -32,6 +32,9 @@ namespace NewsParser.Core.Services
             if (to == null)
                 to = DateTime.MaxValue;
 
+            if (from > to)
+                throw new ArgumentException(nameof(GetNewsPostsByDates));
+
             List<NewsPost>? newsPostsByDates = newsPosts.Where(n => n.PostDate >= from && n.PostDate <= to).ToList();
 
             return newsPostsByDates.Select(n => n.ToNewsPostDto()).ToList();
@@ -50,7 +53,7 @@ namespace NewsParser.Core.Services
             List<NewsPostDto> newsPostDtos = newsPosts.Select(n => n.ToNewsPostDto()).ToList();
             List<NewsPostDto>? resultPosts = newsPostDtos.Where(p =>
             {
-                bool matchInTitle = regex.IsMatch(p.Title);
+                bool matchInTitle = p.Title != null ? regex.IsMatch(p.Title) : false;
                 bool matchInText = p.Text != null ? regex.IsMatch(p.Text.ToPlainText()) : false;
                 return matchInTitle || matchInText;
             }).ToList();

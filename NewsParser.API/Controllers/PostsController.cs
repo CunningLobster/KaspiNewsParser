@@ -21,12 +21,26 @@ namespace NewsParser.API.Controllers
             _newsPostGetterService = newsPostGetterService;
         }
 
+        /// <summary>
+        /// Получить все новостные посты между датами. Если даты не введены, возвращает все имеющиеся посты
+        /// </summary>
+        /// <param name="from">Дата с MM-dd-yyyy</param>
+        /// <param name="to">Дата по MM-dd-yyyy</param>
+        /// <returns>Новостные посты в промежутке между указанными датами включительно</returns>
         [HttpGet]
+        [Route("posts")]
         public async Task<ActionResult<List<NewsPostDto>>> GetNewsPosts(DateTime? from, DateTime? to)
         {
-
             _logger.LogInformation("Run GET Method {0} from {1}", nameof(GetNewsPosts), nameof(PostsController));
 
+            if (from > to)
+            {
+                return Problem(
+                    title: "Invalid search dates",
+                    detail: "To date must be more or equal than From date",
+                    statusCode: 400
+                );
+            }
             var newsPostsByDates = await _newsPostGetterService.GetNewsPostsByDates(from, to);
 
             if (newsPostsByDates == null)
@@ -35,6 +49,10 @@ namespace NewsParser.API.Controllers
             return newsPostsByDates;
         }
 
+        /// <summary>
+        /// Вернуть топ 10 самых популярных слов в тексте новостей
+        /// </summary>
+        /// <returns>Список топ 10 самых популярных слов</returns>
         [HttpGet]
         [Route("topten")]
         public async Task<ActionResult<List<string>>> GetTopTenWords()
@@ -59,12 +77,16 @@ namespace NewsParser.API.Controllers
             List<string>? topTenWords = topTenWordsDict?.Select(d => d.Key).ToList();
 
             if (topTenWords == null)
-            {
                 return NotFound();
-            }
+
             return topTenWords;
         }
 
+        /// <summary>
+        /// Вернуть новостные посты, в названиях или тексте которых встречается указанный текст
+        /// </summary>
+        /// <param name="text">Текст для поиска</param>
+        /// <returns>Новостные посты, содержащие искомый текст</returns>
         [HttpGet]
         [Route("search")]
         public async Task<ActionResult<List<NewsPostDto>>> GetNewsPostsByText(string text)

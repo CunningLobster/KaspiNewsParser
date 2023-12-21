@@ -252,24 +252,24 @@ namespace NewsParser.Core.Extensions
                 throw new ArgumentNullException(nameof(HtmlDto));
 
             string innerHtml = HtmlDto.InnerHtml;
-            //matches one or more (white space or line breaks) between '>' and '<'
+            //Совпадения по пробелам и переносам строки между '>' и '<'
             const string tagWhiteSpace = @"(>|$)(\W|\n|\r)+<";
-            //match any character between '<' and '>', even when end tag is missing
+            //Совпадения по содержимому внутри '<' и '>' 
             const string stripFormatting = @"<[^>]*(>|$)";
-            //matches: <br>,<br/>,<br />,<BR>,<BR/>,<BR />
+            //Совпадения по: <br>,<br/>,<br />,<BR>,<BR/>,<BR />
             const string lineBreak = @"<(br|BR)\s{0,1}\/{0,1}>";
             var lineBreakRegex = new Regex(lineBreak, RegexOptions.Multiline);
             var stripFormattingRegex = new Regex(stripFormatting, RegexOptions.Multiline);
             var tagWhiteSpaceRegex = new Regex(tagWhiteSpace, RegexOptions.Multiline);
 
             var text = innerHtml;
-            //Decode html specific characters
+            //Декодинг html символов
             text = System.Net.WebUtility.HtmlDecode(text);
-            //Remove tag whitespace/line breaks
+            //Убрать пустые пробелы и переносы строк
             text = tagWhiteSpaceRegex.Replace(text, "><");
-            //Replace <br /> with line breaks
+            //Заменить <br /> на перенос строки
             text = lineBreakRegex.Replace(text, Environment.NewLine);
-            //Strip formatting
+            //Убрать тэги
             text = stripFormattingRegex.Replace(text, string.Empty);
 
             return text;
