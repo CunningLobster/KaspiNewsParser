@@ -19,6 +19,6 @@ namespace NewsParser.Core.RepositoryContracts
         /// Удалить все новостные посты из таблицы
         /// </summary>
         /// <returns>true, если удаление прошло успешно</returns>
-        Task<bool> ClearNewsPostTable();
+        Task<bool> DeleteAllNewsPosts();
     }
 }

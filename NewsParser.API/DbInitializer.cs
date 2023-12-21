@@ -1,6 +1,4 @@
 using NewsParser.Core.DTO;
-using NewsParser.Core.Entities;
-using NewsParser.Core.RepositoryContracts;
 using NewsParser.Core.ServiceContracts;
 
 namespace NewsParser.API
@@ -20,9 +18,9 @@ namespace NewsParser.API
             {
                 var services = scope.ServiceProvider;
 
-                var newsPostRepository = services.GetRequiredService<INewsPostRepository>();
+                var newsSpostDeleterService = services.GetRequiredService<INewsPostDeleterService>();
                 //Очистить таблицу при каждом запуске приложения
-                await newsPostRepository.ClearNewsPostTable();
+                await newsSpostDeleterService.DeleteAllNewsPosts();
 
                 try
                 {

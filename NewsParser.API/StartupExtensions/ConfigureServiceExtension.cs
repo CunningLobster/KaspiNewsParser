@@ -17,6 +17,7 @@ namespace NewsParser.API.StartupExtensions
             services.AddScoped<ITextAnalizerService, TextAnalizerService>();
             services.AddScoped<INewsPostAdderService, NewsPostAdderService>();
             services.AddScoped<INewsPostHtmlGetterService, HabrNewsPostHtmlGetterService>();
+            services.AddScoped<INewsPostDeleterService, NewsPostDeleterService>();
 
             // Репозитории
             services.AddScoped<INewsPostRepository, NewsPostRepository>();

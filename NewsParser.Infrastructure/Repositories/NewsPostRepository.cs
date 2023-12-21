@@ -36,7 +36,7 @@ namespace NewsParser.Infrastructure.Repositories
             return newsPosts;
         }
 
-        public async Task<bool> ClearNewsPostTable()
+        public async Task<bool> DeleteAllNewsPosts()
         {
             using (IDbConnection dbConnection = new SqlConnection(_configuration.GetConnectionString("Default")))
             {
